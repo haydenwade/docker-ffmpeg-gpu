@@ -22,12 +22,23 @@ const main = () => {
     const input = `./input/untranscodedFile.ps`
     const output = `./output/${new Date().getTime()}.mp4`;
 
+    // let options = [
+    //     '-profile:v baseline',
+    //     '-level 3.0',
+    //     '-movflags +faststart',
+    //     // '-map 0:0'
+    // ];
+
+    //mp4 - from hackathon
     let options = [
-        '-profile:v baseline',
-        '-level 3.0',
-        '-movflags +faststart',
-        // '-map 0:0'
-    ];
+        "-vsync 0",
+        "-hwaccel cuvid",
+        "-c:v h264_cuvid",
+        "-resize 960x540",
+        "-c:a copy",
+        "-c:v h264_nvenc",
+        "-b:v 5M"
+    ]
 
     ffmpeg(input).outputOptions(options)
         .on('end', () => {
