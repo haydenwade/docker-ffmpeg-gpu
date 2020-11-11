@@ -1,5 +1,5 @@
 FROM nvidia/cuda:11.0-base-ubuntu20.04
-RUN apt update && apt install -y ffmpeg
+RUN apt update && apt install -y ffmpeg curl
 RUN mkdir /ffmpeg
 
 ENV NVM_DIR "/usr/local/nvm"
