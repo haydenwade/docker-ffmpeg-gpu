@@ -31,16 +31,20 @@ const main = () => {
 
     //mp4 - from hackathon
     let options = [
-        "-vsync 0",
-        "-hwaccel cuvid",
-        "-c:v h264_cuvid",
-        "-resize 960x540",
         "-c:a copy",
         "-c:v h264_nvenc",
         "-b:v 5M"
     ]
 
-    ffmpeg(input).outputOptions(options)
+    let inputOptions = [
+        "-vsync 0",
+        "-hwaccel cuvid",
+        "-c:v h264_cuvid",
+        "-resize 960x540",
+        `-i ${input}`
+    ]
+
+    ffmpeg(inputOptions).outputOptions(options)
         .on('end', () => {
             console.log('end transcode')
         })
