@@ -1,5 +1,6 @@
 const ffmpeg = require('fluent-ffmpeg');
 const AWS = require('aws-sdk');
+const fs = require('fs');
 
 AWS.config = {
     accessKeyId: process.env.AWS_AKI,
@@ -53,17 +54,18 @@ const main = async () => {
         var hrstart = process.hrtime()
 
         const input = `./input/80.ps`
-        const output = `./output/${new Date().getTime()}.mp4`;
+        const fileName = `${new Date().getTime()}.mp4`
+        const output = `./output/${fileName}`;
 
 
         let outputOptions = [
             "-c:a copy",
             "-c:v h264_nvenc",
             "-b:v 5M",
-            '-profile:v baseline',
-            '-level 3.0',
-            '-movflags +faststart',
-            `-s 960x540`
+            // '-profile:v baseline',
+            // '-level 3.0',
+            // '-movflags +faststart',
+            // `-s 960x540`
         ]
 
         let inputOptions = [
@@ -87,11 +89,12 @@ const main = async () => {
                 console.log('uploading')
                 const bodyStream = fs.createReadStream(output);
                 const data = {
-                    Key: `${path}/${fileName}`,
+                    Key: fileName,
                     Body: bodyStream,
                     ContentType: 'video/mp4',
                     ContentDisposition : 'attachment'
                   };
+                  const s3 = new AWS.S3({ params: { Bucket: bucketName } });
                   await s3.putObject(data).promise();
                   console.log('done uploading')
             })
