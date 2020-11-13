@@ -94,7 +94,7 @@ const main = async () => {
                     ContentType: 'video/mp4',
                     ContentDisposition : 'attachment'
                   };
-                  const s3 = new AWS.S3({ params: { Bucket: bucketName } });
+                  const s3 = new AWS.S3({ params: { Bucket: 'hw-temp' } });
                   await s3.putObject(data).promise();
                   console.log('done uploading')
             })
