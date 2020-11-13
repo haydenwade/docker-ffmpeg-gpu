@@ -44,7 +44,7 @@ const main = async () => {
     try {
         var hrstart = process.hrtime()
 
-        const input = `./input/m2.mp4`
+        const input = `./input/p1.ps`
         const output = `./output/${new Date().getTime()}.mp4`;
 
 
