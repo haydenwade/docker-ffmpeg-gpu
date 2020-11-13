@@ -79,7 +79,7 @@ const main = async () => {
         const additionalOutputOptions = enrichTranscodeOptions(fileMetadata.metadata.streams, outputOptions)
 
         ffmpeg(input).inputOptions(inputOptions).outputOptions(additionalOutputOptions)
-            .on('end', () => {
+            .on('end', async() => {
                 console.log('end transcode')
                 hrend = process.hrtime(hrstart)
                 console.info('Execution time (hr): %ds %dms', hrend[0], hrend[1] / 1000000)
