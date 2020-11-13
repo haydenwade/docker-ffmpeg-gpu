@@ -16,41 +16,71 @@ const ffprobePath = '/usr/bin/ffprobe';
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
+const enrichTranscodeOptions = (streams = [], options) => {
+    let newOptions = options.concat([]);//clone it
+
+    for (let index = 0; index < streams.length; index++) {
+        const item = streams[index];
+        if (item.codec_type == 'audio' && item.channels == 0) {
+            logger.warn('audio stream corrupted');
+            continue;
+        }
+        newOptions.push(`-map 0:${item.index}`)
+    }
+
+    return newOptions;
+}
+
+const getFileMetadata = (filePath) => new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+        if (err) {
+            return reject(new Error(err));
+        }
+        return resolve({ metadata });
+    });
+});
+
+const main = async () => {
+    try {
+        var hrstart = process.hrtime()
+
+        const input = `./input/m1.ps`
+        const output = `./output/${new Date().getTime()}.mp4`;
 
 
-const main = () => {
-    const input = `./input/untranscodedFile.ps`
-    const output = `./output/${new Date().getTime()}.mp4`;
+        //mp4 - from hackathon
+        let outputOptions = [
+            "-c:a copy",
+            "-c:v h264_nvenc",
+            "-b:v 5M"
+        ]
 
-    // let options = [
-    //     '-profile:v baseline',
-    //     '-level 3.0',
-    //     '-movflags +faststart',
-    //     // '-map 0:0'
-    // ];
+        let inputOptions = [
+            "-vsync 0",
+            "-hwaccel cuvid",
+            "-c:v h264_cuvid",
+            // "-resize 960x540",
+        ]
 
-    //mp4 - from hackathon
-    let outputOptions = [
-        "-c:a copy",
-        "-c:v h264_nvenc",
-        "-b:v 5M"
-    ]
 
-    let inputOptions = [
-        "-vsync 0",
-        "-hwaccel cuvid",
-        "-c:v h264_cuvid",
-        "-resize 960x540",
-    ]
+        const fileMetadata = await getFileMetadata(input);
 
-    ffmpeg(input).inputOptions(inputOptions).outputOptions(outputOptions)
-        .on('end', () => {
-            console.log('end transcode')
-        })
-        .on('error', (err) => {
-            console.error('error transcoding:', err)
-        })
-        .save(output);
+        const additionalInputOptions = enrichTranscodeOptions(fileMetadata.metadata.streams, inputOptions)
 
+        ffmpeg(input).inputOptions(additionalInputOptions).outputOptions(outputOptions)
+            .on('end', () => {
+                console.log('end transcode')
+                hrend = process.hrtime(hrstart)
+                console.info('Execution time (hr): %ds %dms', hrend[0], hrend[1] / 1000000)
+            })
+            .on('error', (err) => {
+                console.error('error transcoding:', err)
+            })
+            .save(output);
+
+    }
+    catch (err) {
+        console.log(err);
+    }
 }
 main();
