@@ -65,9 +65,9 @@ const main = async () => {
 
         const fileMetadata = await getFileMetadata(input);
 
-        const additionalInputOptions = enrichTranscodeOptions(fileMetadata.metadata.streams, inputOptions)
+        const additionalOutputOptions = enrichTranscodeOptions(fileMetadata.metadata.streams, outputOptions)
 
-        ffmpeg(input).inputOptions(additionalInputOptions).outputOptions(outputOptions)
+        ffmpeg(input).inputOptions(inputOptions).outputOptions(additionalOutputOptions)
             .on('end', () => {
                 console.log('end transcode')
                 hrend = process.hrtime(hrstart)
