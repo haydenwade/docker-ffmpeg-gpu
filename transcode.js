@@ -30,7 +30,7 @@ const enrichTranscodeOptions = (streams = [], options) => {
     for (let index = 0; index < streams.length; index++) {
         const item = streams[index];
         if (item.codec_type == 'audio' && item.channels == 0) {
-            logger.warn('audio stream corrupted');
+            console.warn('audio stream corrupted');
             continue;
         }
         newOptions.push(`-map 0:${item.index}`)
