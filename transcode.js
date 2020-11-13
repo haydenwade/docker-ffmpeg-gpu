@@ -59,7 +59,7 @@ const main = async () => {
             "-vsync 0",
             "-hwaccel cuvid",
             "-c:v h264_cuvid",
-            "-s 960x540",
+            "-resize 960x540",
         ]
 
 
